@@ -39,5 +39,7 @@ sudo ctr --namespace k8s.io image tag ${PAUSE_CONTAINER_IMAGE} ${TAG}
 sudo ctr --namespace k8s.io image label ${TAG} io.cri-containerd.pinned=pinned
 # add a label with context about the tag's source image
 sudo ctr --namespace k8s.io image label ${TAG} io.cri-containerd.source=${PAUSE_CONTAINER_IMAGE}
-# store the archive locally so that it can be imported in the future in case of issues
-sudo ctr --namespace k8s.io image export ${EXPORT_PATH} ${TAG}
+# store the archive locally so that it can be imported in the future in case of issues.
+# --local because through the transfer API, ctr can exit 0 before the archive is fully written.
+# see: https://github.com/containerd/nerdctl/commit/80d3ab8a4dac11f4c87f0ea09d07492807c458a8
+sudo ctr --namespace k8s.io image export --local ${EXPORT_PATH} ${TAG}

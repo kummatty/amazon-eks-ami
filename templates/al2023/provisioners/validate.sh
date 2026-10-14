@@ -79,6 +79,21 @@ if command -v dkms > /dev/null; then
 fi
 
 #############################
+### pause image #############
+#############################
+
+PAUSE_ARCHIVE=/etc/eks/pause.tar
+if ! PAUSE_ARCHIVE_ENTRIES=$(sudo tar tf "${PAUSE_ARCHIVE}"); then
+  echo "${PAUSE_ARCHIVE} is not a readable tar archive."
+  exit 1
+fi
+# containerd writes archive entries in name order, so a complete archive ends with oci-layout
+if [ "$(tail -n1 <<< "${PAUSE_ARCHIVE_ENTRIES}")" != "oci-layout" ]; then
+  echo "${PAUSE_ARCHIVE} is incomplete."
+  exit 1
+fi
+
+#############################
 ### nvidia drivers #####
 #############################
 NVIDIA_DRIVER_MODULES=(nvidia nvidia-drm nvidia-modeset nvidia-uvm)
